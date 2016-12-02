@@ -3,6 +3,7 @@ package com.junior.dwan.flashlight;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +50,21 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     private SurfaceTexture mPreviewTexture;
     int mColor;
     private AmbilWarnaDialog mAmbilWarnaDialog;
-    private boolean isFlashEnabled;
+    private boolean isFlashEnable;
+    private float mBrightnessDefault;
+    private boolean isBlinkFlash;
+    private Handler mHandler;
+    private int mblinkDefault;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        isFlashEnabled = true;
+        mBrightnessDefault = getBrightness();
+        isFlashEnable = false;
+        isBlinkFlash = false;
+        mblinkDefault=100;
+        mHandler = new Handler();
         ButterKnife.bind(this);
         initializeCamera();
         setFlashLightOn();
@@ -76,7 +85,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     }
 
     private void setFlashLightOn() {
-        if (!mTurnFlashLightBtn.isChecked()) {
+        if (!isFlashEnable) {
             mCamParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
             mCam.setParameters(mCamParameters);
             mPreviewTexture = new SurfaceTexture(0);
@@ -86,6 +95,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 // Ignore
             }
             mCam.startPreview();
+            isFlashEnable = true;
         } else {
             mCamParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             mCam.setParameters(mCamParameters);
@@ -96,6 +106,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 // Ignore
             }
             mCam.startPreview();
+            isFlashEnable = false;
         }
     }
 
@@ -109,6 +120,9 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                         btn.setChecked(!isChecked);
                         switchBackground();
                     }
+                    if (mTurnFlashLightBtn.isChecked())
+                        showToast("on");
+                    else showToast("off");
 
                     if (!mTurnFlashLightBtn.isChecked()) {
                         mainLayout.setBackground(getResources().getDrawable(R.drawable.bg_stardust));
@@ -155,6 +169,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             case R.id.econom_chTv:
                 ((CheckedTextView) v).toggle();
                 showOptions(mEconomChTV);
+
                 break;
             case R.id.display_chTv:
                 ((CheckedTextView) v).toggle();
@@ -176,12 +191,12 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 if (!mColorOther.isChecked()) {
                     mColorOther.toggle();
                 }
-                setColor(color);
+                mColor = color;
                 swiitchToogleColor(mColorOther);
                 mColorOther.setTextColor(color);
 
                 if (!mTurnFlashLightBtn.isChecked()) {
-                    mColor=color;
+                    mColor = color;
                     turnFlash();
                 }
             }
@@ -205,8 +220,14 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             case R.id.econom_chTv:
                 if (v.isChecked()) {
                     mSeekBar.setVisibility(View.VISIBLE);
-                } else
+                    mHandler.postDelayed(toggleFlash, mblinkDefault);
+                } else {
                     mSeekBar.setVisibility(View.GONE);
+                    mHandler.removeCallbacks(toggleFlash);
+                    if(isFlashEnable){
+                        turnFlash();
+                    }
+                }
                 break;
             case R.id.display_chTv:
                 if (v.isChecked()) {
@@ -221,22 +242,17 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         if (mDisplayChTV.isChecked() && !mFlashChTV.isChecked()) {
             if (mColor != 0) {
                 switchBackground();
-                isFlashEnabled = true;
             } else {
                 showToast("Pick the color!");
-                isFlashEnabled = false;
             }
 
         } else if (mFlashChTV.isChecked() && !mDisplayChTV.isChecked()) {
             setFlashLightOn();
-            isFlashEnabled = true;
         } else if (mDisplayChTV.isChecked() && mFlashChTV.isChecked()) {
             if (mColor != 0) {
-                isFlashEnabled = true;
                 switchBackground();
                 setFlashLightOn();
             } else {
-                isFlashEnabled = false;
                 showToast("Pick the color!");
             }
 
@@ -245,10 +261,13 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
     private void switchBackground() {
         if (!mTurnFlashLightBtn.isChecked()) {
+            setBrightness(1);
             mainLayout.setBackgroundColor(mColor);
 
-        } else
+        } else {
+            setBrightness(mBrightnessDefault);
             mainLayout.setBackground(getResources().getDrawable(R.drawable.bg_stardust));
+        }
     }
 
     private void swiitchToogleColor(CheckedTextView tvColor) {
@@ -285,4 +304,19 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             mColor = 0;
         }
     }
+
+    private Runnable toggleFlash = new Runnable() {
+        public void run() {
+            if (isBlinkFlash) {
+                //do Flash off
+                setFlashLightOn();
+                isBlinkFlash = false;
+            } else {
+                //do Flash on
+                setFlashLightOn();
+                isBlinkFlash = true;
+            }
+            mHandler.postDelayed(this, 100);
+        }
+    };
 }
