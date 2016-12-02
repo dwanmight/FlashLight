@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/btnSetting"
+                android:background="@android:color/transparent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnTurnFlashLight"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+        <CheckedTextView
+            android:id="@+id/econom_chTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Econom "
+            android:textColor="#9c9c9c"/>
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="1000"
+            android:progress="100"
+            android:visibility="gone"/>
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_marginLeft="32dp"
+                      android:layout_marginRight="32dp"
+                      android:orientation="horizontal"
+                      android:weightSum="2">
+            <CheckedTextView
+                android:id="@+id/flash_chTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:checked="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="Flashight"
+                android:textColor="#9c9c9c"/>
+            <CheckedTextView
+                android:id="@+id/display_chTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="Display"
+                android:textColor="#9c9c9c"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/color_linLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="2">
+            <CheckedTextView
+                android:id="@+id/btn_color_white"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="White"
+                android:textColor="#9c9c9c"/>
+            <CheckedTextView
+                android:id="@+id/btn_color_other"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="Another"
+                android:textColor="#9c9c9c"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
